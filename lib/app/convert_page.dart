@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:doviz_task/model/currency_model.dart';
 import 'package:doviz_task/viewmodel/currency_view_model.dart';
 import 'package:flutter/material.dart';
@@ -12,188 +14,182 @@ class ConvertPage extends StatefulWidget {
 }
 
 class _ConvertPageState extends State<ConvertPage> {
-  @override
+  final firstTextFieldController = TextEditingController();
+    final secondTextFieldController = TextEditingController();
+    late Stream<String> dbCall;
+      final StreamController<String> _controller =  StreamController<String>();
+  
+ String fromChangeCurrency = "USD";
+   String toChangeCurrency ="TRY";
+   
+
+   List<String> currencyList = ['EUR', 'USD', 'TRY'];  
+   @override
   void initState() {
+    dbCall = _controller.stream;
+       firstTextFieldController.text="1";
     myMethod();
     super.initState();
   }
+  //void _printLatestValue() {
+    //    secondTextFieldController.text =(3 * double.parse(firstTextFieldController.value.text)).toString();
+
+      //}
+  @override
+  void dispose() {
+    firstTextFieldController.dispose();
+    firstTextFieldController.removeListener(() { });
+    secondTextFieldController.dispose();
+    super.dispose();
+  }
+
 
   Future<DovizModel?> myMethod() async {
     CurrencyViewModel _currencyViewModel =
         Provider.of<CurrencyViewModel>(context, listen: false);
     return await _currencyViewModel.getCurrency();
   }
+ 
+
+ 
+
+    _fromChange(String changeItem){
+    setState(() {
+       fromChangeCurrency=changeItem;
+       
+
+       
+    });
+  }
+  _toChange(String changeItem){
+    setState(() {
+      toChangeCurrency = changeItem;
+      
+      
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
     /*  var usdtry = _currencyViewModel.dovizModel!.usdTry.toString();
     debugPrint(usdtry); */
+    
+   // firstTextFieldController.addListener(() {
+//secondTextFieldController.text =(double.parse(usdTry) * double.parse(firstTextFieldController.text) ).toString();
+  //        },);
+   
 
     return FutureBuilder<DovizModel?>(
         future: myMethod(),
-        builder: (context, snapshot) {
-          String usdTry = snapshot.data?.usdTry.toString() ?? "";
-          String euroTry = snapshot.data?.eurTry.toString() ?? "";
-
-          List<String> item = ["item1", "item2"];
-
-          String? selectedItem;
-
-          var dropDownItems = ['EUR', 'USD', 'TRY'];
-
+        builder: (context, futureSnapshot) {
+          
+          
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Döviz Yorumları'),
-            ),
-            body: Form(
-              key: _formKey,
+            appBar: AppBar(title: const Text('Doviz Yorumları'),),
+            bottomNavigationBar: BottomNavigationBar(items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.abc),label: "home"),
+              BottomNavigationBarItem(icon: Icon(Icons.abc),label: "home"),
+              BottomNavigationBarItem(icon: Icon(Icons.abc),label: "home"),
+              BottomNavigationBarItem(icon: Icon(Icons.abc),label: "home"),
+
+              ]),
+            body: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 25.0, left: 25),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 7,
-                          child: TextFormField(
-                            maxLines: 1,
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(
-                                  borderRadius: BorderRadius.all(Radius.zero)),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                // Red border with the width is equal to 5
-                                border: Border.all(
-                                    width: 2,
-                                    color: Theme.of(context).backgroundColor)),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                  value: selectedItem,
-                                  alignment: Alignment.center,
-                                  hint: Text(selectedItem ?? ''),
-                                  focusColor: Theme.of(context).primaryColor,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(8)),
-                                  items: dropDownItems
-                                      .map((e) => DropdownMenuItem(
-                                            child: Container(
-                                              alignment: Alignment.centerLeft,
-                                              child: Text(
-                                                e,
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                            ),
-                                            value: e,
-                                          ))
-                                      .toList(),
-                                  selectedItemBuilder: (BuildContext context) =>
-                                      dropDownItems
-                                          .map((e) => Center(
-                                                child: Text(
-                                                  e,
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.amber,
-                                                      fontStyle:
-                                                          FontStyle.italic,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ))
-                                          .toList(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedItem = value;
-                                    });
-                                  }),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(right: 25.0, left: 25.0, top: 15),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 7,
-                          child: TextFormField(
-                            maxLines: 1,
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(
-                                  borderRadius: BorderRadius.all(Radius.zero)),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                // Red border with the width is equal to 5
-                                border: Border.all(
-                                    width: 2,
-                                    color: Theme.of(context).backgroundColor)),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton(
-                                  alignment: Alignment.center,
-                                  focusColor: Theme.of(context).primaryColor,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(15)),
-                                  items: dropDownItems.map((String items) {
-                                    return DropdownMenuItem(
-                                      value: items,
-                                      child: Text(items),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    setState(() {});
-                                  }),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  DropdownButton<String>(
-                    hint: Text(selectedItem ?? ''),
-                    style: TextStyle(color: Colors.black),
-                    value: selectedItem,
-                    onChanged: (changesValue) {
-                      setState(() {
-                        selectedItem = changesValue;
-                        debugPrint(selectedItem);
-                      });
-                    },
-                    items: item.map((valueItem) {
-                      return DropdownMenuItem(
-                        child: Text(valueItem),
-                        value: valueItem,
+                  ListTile(title: StreamBuilder(
+                    
+                    builder: (context,snapshot) {
+                      return StreamBuilder(
+                        stream: dbCall,
+                        builder: (context,AsyncSnapshot<String> snapshot) {
+                          return TextField(
+                          
+                          controller: firstTextFieldController,
+                          keyboardType: TextInputType.number,
+                          onChanged: (value){
+                            if(fromChangeCurrency =="USD"&& toChangeCurrency =="TRY")
+                            {firstTextFieldController.addListener(() {
+secondTextFieldController.text =(futureSnapshot.data!.usdTry * double.parse(firstTextFieldController.text) ).toString();
+          },);}
+              else if(fromChangeCurrency =="EUR"&& toChangeCurrency =="TRY"){
+                firstTextFieldController.addListener(() {
+secondTextFieldController.text =(futureSnapshot.data!.eurTry * double.parse(firstTextFieldController.text) ).toString();
+          },);
+              }
+                            
+                          },
+                            
+                          
+                          
+                );
+                        }
                       );
-                    }).toList(),
+                    }
                   ),
+                trailing: _currencyDropDownButton(currencyList,fromChangeCurrency,futureSnapshot),
+                ),
+                ListTile(title: TextField(
+                  controller: secondTextFieldController,
+                  keyboardType: TextInputType.number,
+                  
+                ),
+                trailing: _currencyDropDownButton(currencyList,toChangeCurrency, futureSnapshot),
+                ),
                 ],
+                
               ),
+
             ),
           );
         });
+
+
   }
+ 
+  DropdownButton<dynamic> _currencyDropDownButton(List<String> currencyList ,String? selectedItem,AsyncSnapshot<DovizModel?> snapshot) { 
+    
+    return DropdownButton(
+    value: selectedItem,
+    items: currencyList.map((value) => DropdownMenuItem(
+                                            value: value,
+                                            child: Container(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                value,
+                                                style: const TextStyle(fontSize: 18),
+                                                
+                                              ),
+                                              
+                                            ),
+                                            
+                                          ))
+                                      .toList(), onChanged: ( items){
+
+                                          
+                                        if(selectedItem == fromChangeCurrency ){
+                                         
+                                              firstTextFieldController.addListener(() {
+secondTextFieldController.text =(snapshot.data!.usdTry * double.parse(firstTextFieldController.text) ).toString();
+          },);
+                                            _fromChange(items);
+                                           
+                                           
+                                        }else{
+
+                                            
+                                            _toChange(items);
+                                        }
+                                        
+                                        
+                                        
+                                        
+                                      });
+
+  }
+  
+  
 }
